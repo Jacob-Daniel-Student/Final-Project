@@ -1,32 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class DungeonGenerator : AbstractDungeonGenerator
 {
-    [SerializeField] private int iterations = 10;
-    [SerializeField] public int walkLength = 10;
-    [SerializeField] public bool startRandomlyEachIteration = true;
 
+    [SerializeField] protected SimpleRandomWalkSO randomWalkParameters;
     protected override void RunProceduralGeneration() 
     {
-        HashSet<Vector2Int> floorPositions = RunRandomWalk();
+        HashSet<Vector2Int> floorPositions = RunRandomWalk(randomWalkParameters, startPosition);
         tileMapVisualizer.Clear();
         tileMapVisualizer.PaintFloorTiles(floorPositions);
+        WallGenerator.CreateWalls(floorPositions, tileMapVisualizer);
     }
 
-    protected HashSet<Vector2Int> RunRandomWalk() 
+    protected HashSet<Vector2Int> RunRandomWalk(SimpleRandomWalkSO parameters, Vector2Int position) 
     {
-        var curentPosition = startPosition;
+        var curentPosition = position;
         HashSet<Vector2Int> floorPositions = new HashSet<Vector2Int>();
-        for(int i = 0; i < iterations; i++) 
+        for(int i = 0; i < parameters.iterations; i++) 
         {
-            var path = RandomWalkAlgorithim.ProceduralGenerationAlgorithims.SimpleRandomWalk(curentPosition, walkLength);
+            var path = ProceduralGenerationAlgorithims.SimpleRandomWalk(curentPosition, parameters.walkLength);
             floorPositions.UnionWith(path);
-            if (startRandomlyEachIteration)
+            if (parameters.startRandomlyEachIteration)
                 curentPosition = floorPositions.ElementAt(Random.Range(0, floorPositions.Count));
                 
         }
