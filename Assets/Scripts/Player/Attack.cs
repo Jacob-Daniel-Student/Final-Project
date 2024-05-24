@@ -5,30 +5,40 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
-    public GameObject player;
 
-    public BoxCollider2D boxCollider;
+    public float attackCooldown = 1f;
+    public float startAttackTime = 2f;
+    public bool isAttacking = false;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Transform attackPos;
+    public LayerMask whatIsEnimes; 
+    public float attackRange;
+    public int damage;
 
     // Update is called once per frame
-  /*  void Update()
+    void Update()
     {
-        if (Input.GetMouseButtonDown(0)) 
+        if(attackCooldown <= 0f)
         {
-            SpawnBoxCollider();
-            Debug.Log("1");
+            if (Input.GetMouseButtonDown(0))
+            {
+                Collider2D[] enimesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnimes);
+                for(int i = 0; i < enimesToDamage.Length; i++)
+                {
+                    enimesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+                }
+            }
+            attackCooldown = startAttackTime;
+        }
+        else 
+        {
+            attackCooldown -= Time.deltaTime;
         }
     }
 
-    void SpawnBoxCollider() 
+    private void OnDrawGizmosSelected()
     {
-        Vector2 box = new Vector2();
-        Instantiate(boxCollider, box, Quaternion.identity);
-    }*/
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPos.position, attackRange);
+    }
 }

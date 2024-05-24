@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     public GameObject player;
     public float speed = 3f;
     public float distanceBetween = 1f;
+    public int health;
 
     private float distance;
     // Start is called before the first frame update
@@ -22,7 +23,6 @@ public class Enemy : MonoBehaviour
         Vector2 direction = player.transform.position - player.transform.position;
         direction.Normalize();
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
         if(distance < distanceBetween) 
         {
             transform.position = Vector2.MoveTowards(this.transform.position, player.transform.position, speed * Time.deltaTime);
@@ -30,9 +30,14 @@ public class Enemy : MonoBehaviour
         }
 
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void TakeDamage(int damage) 
     {
-        if (collision == gameObject.CompareTag("Enemy"))
+        health -= damage;
+        Debug.Log("Damage Taken");
+    }
+    public void Death() 
+    {
+        if(health <= 0) 
         {
             Destroy(gameObject);
         }
