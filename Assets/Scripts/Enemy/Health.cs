@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
+    public int hp = 3;
+    private Rigidbody2D rb;
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(hp <= 0) 
+        {
+            Destroy(gameObject);
+        }
+    }
+    public void TakeDamage(int damageDone)
+    {
+        hp -= damageDone;
     }
 }

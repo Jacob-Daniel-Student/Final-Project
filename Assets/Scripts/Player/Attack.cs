@@ -1,44 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
 
-    public float attackCooldown = 1f;
-    public float startAttackTime = 2f;
-    public bool isAttacking = false;
+    public KeyCode attackKey = KeyCode.Space; // Change this to the key you want to use for attacking
+    public float attackRange = 1f; // Range of the melee attack
+    public LayerMask attackLayer; // Layer mask to filter out objects that can be attacked
 
-    public Transform attackPos;
-    public LayerMask whatIsEnimes; 
-    public float attackRange;
-    public int damage;
+    private Animator animator; // Reference to the Animator component
+    private bool isAttacking = false; // Flag to prevent multiple attacks
 
-    // Update is called once per frame
+    void Start()
+    {
+        // Get reference to the Animator component attached to the player character
+        animator = GetComponent<Animator>();
+    }
+
     void Update()
     {
-        if(attackCooldown <= 0f)
+        // Check if attack key is pressed and the player is not already attacking
+        if (Input.GetKeyDown(attackKey) && !isAttacking)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Collider2D[] enimesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnimes);
-                for(int i = 0; i < enimesToDamage.Length; i++)
-                {
-                    enimesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                }
-            }
-            attackCooldown = startAttackTime;
-        }
-        else 
-        {
-            attackCooldown -= Time.deltaTime;
+            // Trigger the attack animation
+            animator.SetTrigger("Attack");
+
+            // Call the Attack method after a short delay (you can adjust the delay as needed)
+            Invoke("AttackD", 0.2f);
         }
     }
 
-    private void OnDrawGizmosSelected()
+    void AttackD()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPos.position, attackRange);
+        Vector3 playerDirection = Input.mousePosition;
+        // Set isAttacking flag to true to prevent multiple attacks during the animation
+        isAttacking = true;
+
+        // Perform a raycast in the direction the player is facing to detect enemies within attack range
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, playerDirection, attackRange, attackLayer);
+
+        // Loop through all hits and damage the enemies
+        foreach (RaycastHit2D hit in hits)
+        {
+            // Assuming enemies have a health component, you can replace this with whatever logic you use for damaging enemies
+            Health enemyHealth = hit.collider.GetComponent<Health>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(1); // Damage the enemy (1 damage point in this example)
+            }
+        }
+
+        // Reset isAttacking flag after the attack animation duration (you can adjust the duration based on your animation)
+        Invoke("ResetAttack", 0.5f);
+    }
+
+    void ResetAttack()
+    {
+        // Reset isAttacking flag to allow the player to attack again
+        isAttacking = false;
     }
 }
+
