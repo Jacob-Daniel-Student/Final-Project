@@ -22,6 +22,8 @@ public class Attack : MonoBehaviour
 
     void Update()
     {
+        Vector3 playerDirection = Input.mousePosition - transform.position;
+
         // Check if attack key is pressed and the player is not already attacking
         if (Input.GetKeyDown(attackKey) && !isAttacking)
         {
@@ -29,18 +31,19 @@ public class Attack : MonoBehaviour
             animator.SetTrigger("Attack");
 
             // Call the Attack method after a short delay (you can adjust the delay as needed)
-            Invoke("AttackD", 0.2f);
+            AttackD(playerDirection);  
         }
+            ResetAttack();
     }
 
-    void AttackD()
+    void AttackD(Vector3 playerDirection)
     {
-        Vector3 playerDirection = Input.mousePosition;
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, playerDirection, attackRange, attackLayer);
+
         // Set isAttacking flag to true to prevent multiple attacks during the animation
         isAttacking = true;
 
         // Perform a raycast in the direction the player is facing to detect enemies within attack range
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, playerDirection, attackRange, attackLayer);
 
         // Loop through all hits and damage the enemies
         foreach (RaycastHit2D hit in hits)
