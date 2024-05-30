@@ -8,7 +8,6 @@ public class Enemy : MonoBehaviour
     public float speed = 3f;
     public float distanceBetween = 1f;
     public int health;
-
     private float distance;
     // Start is called before the first frame update
     void Start()

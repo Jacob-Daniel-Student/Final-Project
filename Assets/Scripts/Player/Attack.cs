@@ -1,69 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Attack : MonoBehaviour
+public class PlayerMeleeAttack : MonoBehaviour
 {
+    public Transform attackPoint; // The point from which the attack will be performed
+    public LayerMask enemyLayer; // The layer containing the enemies
+    public float attackRange = 1f; // The range of the attack
+    public float attackRate = 2f; // The rate at which the attack can be performed (attacks per second)
+    public float attackCooldown = 0.5f; // The cooldown between attacks
 
-    public KeyCode attackKey = KeyCode.Space; // Change this to the key you want to use for attacking
-    public float attackRange = 1f; // Range of the melee attack
-    public LayerMask attackLayer; // Layer mask to filter out objects that can be attacked
-
-    private Animator animator; // Reference to the Animator component
-    private bool isAttacking = false; // Flag to prevent multiple attacks
-
-    void Start()
-    {
-        // Get reference to the Animator component attached to the player character
-        animator = GetComponent<Animator>();
-    }
+    private float nextAttackTime = 0f; // The time when the next attack can be performed
 
     void Update()
     {
-        Vector3 playerDirection = Input.mousePosition - transform.position;
+        // Aim the attack towards the mouse position
+        AimAttack();
 
-        // Check if attack key is pressed and the player is not already attacking
-        if (Input.GetKeyDown(attackKey) && !isAttacking)
+        // Check for input to perform the attack
+        if (Input.GetButtonDown("Fire1") && Time.time >= nextAttackTime)
         {
-            // Trigger the attack animation
-            animator.SetTrigger("Attack");
-
-            // Call the Attack method after a short delay (you can adjust the delay as needed)
-            AttackD(playerDirection);  
+            PerformAttack();
+            nextAttackTime = Time.time + 1f / attackRate; // Set the time when the next attack can be performed
         }
-            ResetAttack();
     }
 
-    void AttackD(Vector3 playerDirection)
+    void AimAttack()
     {
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, playerDirection, attackRange, attackLayer);
+        // Get the mouse position in world coordinates
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0f;
 
-        // Set isAttacking flag to true to prevent multiple attacks during the animation
-        isAttacking = true;
+        // Calculate the direction from the attack point to the mouse position
+        Vector3 direction = (mousePosition - attackPoint.position).normalized;
 
-        // Perform a raycast in the direction the player is facing to detect enemies within attack range
-
-        // Loop through all hits and damage the enemies
-        foreach (RaycastHit2D hit in hits)
-        {
-            // Assuming enemies have a health component, you can replace this with whatever logic you use for damaging enemies
-            Health enemyHealth = hit.collider.GetComponent<Health>();
-            if (enemyHealth != null)
-            {
-                enemyHealth.TakeDamage(1); // Damage the enemy (1 damage point in this example)
-            }
-        }
-
-        // Reset isAttacking flag after the attack animation duration (you can adjust the duration based on your animation)
-        Invoke("ResetAttack", 0.5f);
+        // Rotate the attack point to face the mouse position
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        attackPoint.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
-    void ResetAttack()
+    void PerformAttack()
     {
-        // Reset isAttacking flag to allow the player to attack again
-        isAttacking = false;
+        // Detect enemies in the attack range
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
+
+        // Damage each enemy hit
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            Debug.Log("Attacked " + enemy.name); // Replace this with your attack logic
+            enemy.gameObject.GetComponent<Health>().TakeDamage(1);
+        }
+    }
+
+    // Visualize the attack range in the editor
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint != null)
+        {
+            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        }
     }
 }
-
