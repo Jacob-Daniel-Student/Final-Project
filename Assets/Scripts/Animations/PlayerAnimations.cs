@@ -7,6 +7,7 @@ public class PlayerAnimations : MonoBehaviour
     [SerializeField] public Rigidbody2D rb;
     public Animator animator;
     public PlayerMovement pm;
+    public PlayerMeleeAttack melee; 
     // Start is called before the first frame update
     void Start()
     {
@@ -17,5 +18,6 @@ public class PlayerAnimations : MonoBehaviour
     void Update()
     {
         animator.SetBool("isRunning", pm.isRunning);
+        animator.SetBool("isAttacking", melee.isAttacking);
     }
 }

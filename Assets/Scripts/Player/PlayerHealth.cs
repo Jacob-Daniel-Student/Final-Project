@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int health = 3;
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            health--;
+        }
     }
 }

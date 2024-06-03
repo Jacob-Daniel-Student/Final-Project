@@ -9,10 +9,14 @@ public class PlayerMeleeAttack : MonoBehaviour
     public float attackRate = 2f; // The rate at which the attack can be performed (attacks per second)
     public float attackCooldown = 0.5f; // The cooldown between attacks
 
+    public bool isAttacking = false;
+    private float animationTime = 0.5f;
+
     private float nextAttackTime = 0f; // The time when the next attack can be performed
 
     void Update()
     {
+        animationTime -= Time.deltaTime;
         // Aim the attack towards the mouse position
         AimAttack();
 
@@ -21,6 +25,11 @@ public class PlayerMeleeAttack : MonoBehaviour
         {
             PerformAttack();
             nextAttackTime = Time.time + 1f / attackRate; // Set the time when the next attack can be performed
+        }
+        if (animationTime <= 0f)
+        {
+            isAttacking = false;
+            animationTime = 1f;
         }
     }
 
@@ -40,15 +49,18 @@ public class PlayerMeleeAttack : MonoBehaviour
 
     void PerformAttack()
     {
-        // Detect enemies in the attack range
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
 
-        // Damage each enemy hit
-        foreach (Collider2D enemy in hitEnemies)
-        {
-            Debug.Log("Attacked " + enemy.name); // Replace this with your attack logic
-            enemy.gameObject.GetComponent<Health>().TakeDamage(1);
-        }
+
+            isAttacking = true;
+            // Detect enemies in the attack range
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
+
+            // Damage each enemy hit
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                Debug.Log("Attacked " + enemy.name); // Replace this with your attack logic
+                enemy.gameObject.GetComponent<Health>().TakeDamage(1);
+            }
     }
 
     // Visualize the attack range in the editor
