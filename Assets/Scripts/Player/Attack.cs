@@ -7,29 +7,27 @@ public class PlayerMeleeAttack : MonoBehaviour
     public LayerMask enemyLayer; // The layer containing the enemies
     public float attackRange = 1f; // The range of the attack
     public float attackRate = 2f; // The rate at which the attack can be performed (attacks per second)
-    public float attackCooldown = 0.5f; // The cooldown between attacks
+    public float attackCooldown = 3f; // The cooldown between attacks
 
     public bool isAttacking = false;
     private float animationTime = 0.5f;
 
-    private float nextAttackTime = 0f; // The time when the next attack can be performed
-
     void Update()
     {
-        animationTime -= Time.deltaTime;
+        attackCooldown -= Time.deltaTime;
         // Aim the attack towards the mouse position
         AimAttack();
 
         // Check for input to perform the attack
-        if (Input.GetButtonDown("Fire1") && Time.time >= nextAttackTime)
+        if (Input.GetButtonDown("Fire1") && Time.time >= attackCooldown)
         {
+            isAttacking = true;
             PerformAttack();
-            nextAttackTime = Time.time + 1f / attackRate; // Set the time when the next attack can be performed
+            attackCooldown = Time.time + 1f / attackRate; // Set the time when the next attack can be performed
         }
-        if (animationTime <= 0f)
+        if(attackCooldown <= 0.0f)
         {
             isAttacking = false;
-            animationTime = 1f;
         }
     }
 

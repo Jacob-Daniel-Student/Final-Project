@@ -11,6 +11,12 @@ public class PlayerHealth : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             health--;
+            GameObject.FindGameObjectWithTag("Health").gameObject.SetActive(false);
+            if(health <= 0)
+            {
+                GameManager.LoadInputScene(0);
+            }
         }
+        
     }
 }

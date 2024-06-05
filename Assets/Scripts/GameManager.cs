@@ -20,14 +20,12 @@ public class GameManager : MonoBehaviour
         }
         
     }
-
-    int CountActiveEnemies()
-    {
-        // Count the number of active enemies in the scene
-        return GameObject.FindGameObjectsWithTag("Enemy").Length;
-    }
-    public void LoadInputScene(int input) 
+    public static void LoadInputScene(int input) 
     {
         SceneManager.LoadScene(input);
+    }
+    public static void Quit()
+    {
+        Application.Quit();
     }
 }
