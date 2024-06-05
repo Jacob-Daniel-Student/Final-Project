@@ -14,7 +14,7 @@ public class PlayerHealth : MonoBehaviour
             GameObject.FindGameObjectWithTag("Health").gameObject.SetActive(false);
             if(health <= 0)
             {
-                GameManager.LoadInputScene(0);
+                GameManager.LoadInputScene(5);
             }
         }
         

@@ -18,6 +18,13 @@ public class PlayerAnimations : MonoBehaviour
     void Update()
     {
         animator.SetBool("isRunning", pm.isRunning);
-        animator.SetBool("isAttacking", melee.isAttacking);
+        if (Input.GetMouseButtonDown(0))
+        {
+            animator.SetBool("isAttacking", true);
+        }
+        if(Input.GetMouseButtonUp(0)) 
+        {
+            animator.SetBool("isAttacking", false);
+        }
     }
 }

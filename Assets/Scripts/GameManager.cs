@@ -24,6 +24,10 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(input);
     }
+    public static void LoadNextScene() 
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
     public static void Quit()
     {
         Application.Quit();
